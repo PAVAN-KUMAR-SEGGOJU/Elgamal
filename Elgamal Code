@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <fcntl.h>
+#include <iostream>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+#include <gmp.h>
+#include <sys/time.h>
+using namespace::std;
+
+#define PRIME 10
+mpz_t a,b,m,t,r,p,M,s,d1,As,dummympz,dum2;
+mpz_t test;
+mpz_t xx[100];
+unsigned long int k,d;
+int dummyint;
+inline void encrypt(char*);
+int dummy;
+
+int main()
+{
+
+//    mpz_init(d);
+    mpz_init(a);
+    mpz_init(b);
+    mpz_init(m);
+    mpz_init(t);
+    mpz_init(r);
+    mpz_init(test);
+    mpz_init(p);
+    mpz_init(s);
+    mpz_init(dummympz);
+    mpz_init(As);
+ mpz_init(d1);
+ cout<<"...................................................................\n";
+  char* p_str = new char[PRIME+1];
+   
+      p_str[0] = '1';
+   
+      for(int i=1;i<PRIME;i++)
+          p_str[i] = (int)(2.0*rand()/(RAND_MAX+1.0)) + 48;
+
+      p_str[PRIME] = '\0';
+
+      mpz_set_str(p,p_str,2);
+
+      mpz_nextprime(p,p);
+   mpz_get_str(p_str,10,p);
+ 
+ d=57; 
+ mpz_init_set_ui (d1,d);
+
+ 
+  cout<<"...................................................................\n";
+    
+ char* a_str = new char[PRIME+1];
+   
+    a_str[0] = '1';
+   
+    for(int i=1;i<PRIME;i++)
+        a_str[i] = (int)(2.0*rand()/(RAND_MAX+1.0)) + 48;
+
+    a_str[PRIME] = '\0';
+
+    mpz_set_str(a,a_str,2);
+
+   gmp_printf("a value no=%Zd\n\n\n",a);
+    mpz_get_str(a_str,10,a);
+   printf("value of  'a' = %s\n",a_str);
+cout<<"...................................................................\n";
+  mpz_powm(b,a,d1,p);
+   gmp_printf("vlaue of b=\n%Zd\n",b);
+
+cout<<"...................................................................\n";   
+ 
+srand ( time(NULL) );
+k=5;
+mpz_pow_ui(r,a,k);
+gmp_printf("r value=%Zd",r);
+cout<<"\ncalculating shared key\n";
+//------------------------------------------------
+mpz_pow_ui(s,b,k);
+gmp_printf("Bob computed shared key s value=%Zd",s);
+
+    unsigned int i;
+    int tmp;
+    int temp[100];
+    char *str;
+    string msg2;
+    cout<<"enter msg\n";
+    cin>>msg2;
+
+    for(i=0;i<msg2.length();i++)
+    {
+        tmp = (int)msg2[i];
+ temp[i]=tmp;
+    }
+    char *ss;
+    string str2[100];
+for(i=0;i<msg2.length();i++)
+{
+dummy=(int)msg2[i];
+mpz_mul_ui(dummympz,s,dummy);
+ss=mpz_get_str (NULL,10,dummympz);
+str2[i]=ss;
+}
+
+cout<<"after encryption\n";
+ for(i=0;i<msg2.length();i++)
+   cout<<str2[i];
+
+ // cout<<"Now alice has to compute shared secret key which can be obtained from r power d\n";
+ //===============================================
+ cout<<"\ndecryption started\n";
+ cout<<"\nDECRYPTED MESSAGE\n==================\n";
+ for(i=0;i<msg2.length();i++)
+   {
+    
+     mpz_set_str(dum2,str2[i].c_str(),10);
+     mpz_cdiv_q (dum2,dum2,s);
+     dummyint=mpz_get_ui(dum2);
+     printf("%c",(char)dummyint);
+   }
+}
